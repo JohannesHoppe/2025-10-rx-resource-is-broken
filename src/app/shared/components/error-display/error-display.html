@@ -1,0 +1,12 @@
+<div class="error-card" role="alert">
+  <h4>✗ Error Occurred</h4>
+  <div class="error-details">
+    <p><strong>Error Type:</strong> <code>{{ getErrorType(error()) }}</code></p>
+    <p><strong>Message:</strong></p>
+    <pre>{{ getErrorMessage(error()) }}</pre>
+    @if (hasCause(error())) {
+      <p><strong>HTTP Details (in <code>.cause</code>):</strong></p>
+      <pre>{{ getCauseDetails(error()) }}</pre>
+    }
+  </div>
+</div>

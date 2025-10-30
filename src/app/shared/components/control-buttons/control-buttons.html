@@ -1,0 +1,26 @@
+<button
+  type="button"
+  (click)="slowModeToggle.emit()"
+  [attr.aria-pressed]="isSlowModeEnabled()"
+  class="btn-primary text-nowrap"
+  [class.btn-danger]="isSlowModeEnabled()"
+  [class.btn-success]="!isSlowModeEnabled()">
+  @if (isSlowModeEnabled()) {
+    ⏱️ Slow Mode ON
+  } @else {
+    ⏱️ Slow Mode OFF
+  }
+</button>
+<button
+  type="button"
+  (click)="errorModeToggle.emit()"
+  [attr.aria-pressed]="isErrorModeEnabled()"
+  class="btn-primary text-nowrap"
+  [class.btn-danger]="isErrorModeEnabled()"
+  [class.btn-success]="!isErrorModeEnabled()">
+  @if (isErrorModeEnabled()) {
+    ✗ Error Mode ON
+  } @else {
+    ✓ Error Mode OFF
+  }
+</button>

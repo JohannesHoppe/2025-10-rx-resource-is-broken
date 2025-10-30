@@ -1,0 +1,83 @@
+<div class="home">
+  <header>
+    <h1>Angular's Resource APIs Are Broken</h1>
+    <p class="subtitle">Live demonstrations of bugs in Angular's experimental APIs</p>
+  </header>
+
+  <section class="intro">
+    <p>
+      Angular's <code>rxResource</code> API is a powerful primitive for handling async data.
+      However, it has several bugs that make it unsuitable for production use.
+      This demo proves each bug and shows that <code>rxResourceFixed</code> works as expected.
+    </p>
+  </section>
+
+  <section class="bugs">
+    <h2>The 3 bugs</h2>
+
+    <div class="bug-list">
+      <article class="bug-card">
+        <h3>Bug #1: Value Resets When Parameters Change</h3>
+        <p>
+          When you change parameters, the previous data should remain visible while new data is being fetched.
+          Instead, both <code>resource</code> and <code>rxResource</code> immediately set <code>value()</code> to <code>undefined</code>.
+          This causes the DOM to collapse, the scroll position to jump, and the entire UI to flicker.
+          This disorients users.
+          At minimum, this behavior should be configurable.
+        </p>
+        <p class="github">
+          <strong>Affects:</strong> <code>resource()</code>, <code>rxResource()</code>, and <code>httpResource()</code><br>
+          <strong>Related Issue:</strong> <a href="https://github.com/angular/angular/issues/58602" target="_blank">#58602</a>
+        </p>
+        <a class="btn-primary" routerLink="/bug-1-value-reset">View Demo →</a>
+      </article>
+
+      <article class="bug-card">
+        <h3>Bug #2: HttpErrorResponse Gets Wrapped</h3>
+        <p>
+          When an HTTP error occurs, you want to check the error and display appropriate messages to your users.
+          Instead, both <code>resource</code> and <code>rxResource</code> wrap <code>HttpErrorResponse</code> in a <code>ResourceWrappedError</code> with an unhelpful message.
+          You must dig into the <code>.cause</code> property to access actual error details.
+          This makes error handling cumbersome.
+        </p>
+        <p class="github">
+          <strong>Affects:</strong> <code>resource()</code> and <code>rxResource()</code>. <code>httpResource()</code> is typically not affected.<br>
+          <strong>Related Issue:</strong> <a href="https://github.com/angular/angular/issues/61861" target="_blank">#61861</a> |
+          <strong>Regression:</strong> <a href="https://github.com/angular/angular/pull/61441" target="_blank">PR #61441</a>
+        </p>
+        <a class="btn-primary" routerLink="/bug-2-error-handling">View Demo →</a>
+      </article>
+
+      <article class="bug-card">
+        <h3>Bug #3: reload() Doesn't Clear Error State</h3>
+        <p>
+          When a resource is in error state and you call <code>reload()</code>, the error should clear immediately.
+          This gives users visual feedback that their reload action was received and the system is now attempting to recover.
+          Instead, the error persists until the new request completes.
+          Users click "Reload" but still see alarming red error messages during the reload attempt.
+          This creates a confusing user experience.
+        </p>
+        <p class="github">
+          <strong>The Problem:</strong> <code>reload()</code> keeps the old error visible while fetching new data
+        </p>
+        <a class="btn-primary" routerLink="/bug-3-reload">View Demo →</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="solution">
+    <h2>The Solution: rxResourceFixed</h2>
+    <p>
+      I have built a wrapper that fixes all these bugs.
+      It's a 100% drop-in replacement for <code>rxResource()</code> that returns the standard <code>ResourceRef&lt;T&gt;</code> interface.
+      Check the demos to see it in action!
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      Read the full blog post: <a href="https://angular.schule/blog/2025-10-rx-resource-is-broken" target="_blank">angular.schule/blog/2025-10-rx-resource-is-broken</a>
+    </p>
+    <p>Experimental APIs have no stability guarantees. Use <code>rxResourceFixed</code> until Angular fixes these issues.</p>
+  </footer>
+</div>

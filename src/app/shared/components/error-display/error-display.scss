@@ -1,0 +1,33 @@
+/* ==========================================================================
+   Error Display Component Styles
+   ========================================================================== */
+
+/* Error Cards */
+.error-card {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 1rem;
+
+  h4 {
+    color: #721c24;
+    margin-top: 0;
+  }
+}
+
+.error-details {
+  p {
+    margin: 0.75rem 0;
+    color: #721c24;
+  }
+
+  pre {
+    background: white;
+    border: 1px solid #f5c6cb;
+    padding: 0.75rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    color: #721c24;
+    font-size: 0.9rem;
+  }
+}

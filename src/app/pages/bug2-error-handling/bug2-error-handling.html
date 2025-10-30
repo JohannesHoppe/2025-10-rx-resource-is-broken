@@ -1,0 +1,87 @@
+<div class="demo-container">
+  <header class="demo-header">
+    <a routerLink="/" class="back-link" aria-label="Back to home">← Back to Home</a>
+    <h1>Bug #2: HttpErrorResponse Gets Wrapped</h1>
+    <p class="subtitle">
+      When an HTTP error occurs, you want to check the error and display appropriate messages to your users.
+      Instead, both <code>resource</code> and <code>rxResource</code> check if the error inherits from the <code>Error</code> class.
+      Since <code>HttpErrorResponse</code> only implements the <code>Error</code> interface (doesn't inherit from it),
+      it gets wrapped in <code>ResourceWrappedError</code> with an unhelpful message.
+      You must dig into the <code>.cause</code> property to access actual HTTP error details.
+      This makes error handling cumbersome.
+    </p>
+    <p class="github">
+      <strong>Affects:</strong> <code>resource()</code> and <code>rxResource()</code>. <code>httpResource()</code> is typically not affected.<br>
+      <strong>Related Issue:</strong> <a href="https://github.com/angular/angular/issues/61861" target="_blank">#61861</a><br>
+      <strong>Regression:</strong>
+      <a href="https://github.com/angular/angular/pull/61441" target="_blank">PR #61441</a>
+      (<a href="https://github.com/angular/angular/commit/9045e229c2899ee910ff6ce41fa822f2af5f88bf" target="_blank">Commit 9045e22</a>)
+    </p>
+  </header>
+
+  <!-- Service Control Panel -->
+  <section class="controls">
+    <p class="hint">
+      Enable "Error Mode" and press "Load Next Book" to see how errors are handled.
+    </p>
+    <div class="control-buttons">
+      <button type="button" (click)="loadNext()" class="btn-primary">
+        📚 Load Next Book
+      </button>
+      <app-control-buttons
+        [isSlowModeEnabled]="bookService.isSlowModeEnabled()"
+        [isErrorModeEnabled]="bookService.isErrorModeEnabled()"
+        (slowModeToggle)="bookService.toggleSlowMode()"
+        (errorModeToggle)="bookService.toggleErrorMode()" />
+    </div>
+  </section>
+
+  <!-- Side-by-side Comparison -->
+  <section class="comparison">
+    <!-- BUGGY: rxResource -->
+    <article class="demo-card buggy">
+      <header class="card-header">
+        <h3>
+          🔴 BUGGY: rxResource
+          @if (buggyResource.isLoading()) {
+            <span class="spinner-tiny"></span>
+            <span class="loading-text">Loading...</span>
+          }
+        </h3>
+        <p>HttpErrorResponse wrapped in ResourceWrappedError</p>
+      </header>
+      <div class="card-body">
+        @if (buggyResource.hasValue()) {
+          @let book = buggyResource.value()!;
+          <app-book-card [book]="book" />
+        }
+
+        @if (buggyResource.error(); as error) {
+          <app-error-display [error]="error" />
+        }
+      </div>
+    </article>
+
+    <!-- FIXED: rxResourceFixed -->
+    <article class="demo-card fixed">
+      <header class="card-header">
+        <h3>
+          🟢 FIXED: rxResourceFixed
+          @if (fixedResource.isLoading()) {
+            <span class="spinner-tiny"></span>
+            <span class="loading-text">Loading...</span>
+          }
+        </h3>
+        <p>Direct access to HttpErrorResponse details</p>
+      </header>
+      <div class="card-body">
+        @if (fixedResource.error(); as error) {
+          <app-error-display [error]="error" />
+        } @else if (fixedResource.hasValue()) {
+          @let book = fixedResource.value()!;
+          <app-book-card [book]="book" />
+        }
+      </div>
+    </article>
+  </section>
+</div>

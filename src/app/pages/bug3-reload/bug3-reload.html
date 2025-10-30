@@ -1,0 +1,86 @@
+<div class="demo-container">
+  <header class="demo-header">
+    <a routerLink="/" class="back-link" aria-label="Back to home">← Back to Home</a>
+    <h1>Bug #3: reload() Doesn't Clear Error State Immediately</h1>
+    <p class="subtitle">
+      When a resource is in error state and you call <code>reload()</code>, the error should clear immediately.
+      This gives users visual feedback that their reload action was received and the system is now attempting to recover.
+      Instead, the error persists until the new request completes.
+      Users click "Reload" but still see alarming red error messages during the reload attempt.
+      This creates a confusing user experience.
+    </p>
+    <p class="github">
+      <strong>Affects:</strong> <code>resource()</code>, <code>rxResource()</code>, and <code>httpResource()</code> (all share the same <code>reload()</code> behavior)<br>
+      <strong>The Problem:</strong> <code>reload()</code> keeps the old error visible while fetching new data, only clearing it after the new response arrives.
+      This creates a confusing state where <code>isLoading: true</code> and <code>hasError: true</code> both return true simultaneously.
+    </p>
+  </header>
+
+  <!-- Service Control Panel -->
+  <section class="controls">
+    <p class="hint">
+      This demo starts in error and slow mode to show the bug.
+      Press "Reload" to retry the request.
+      You can disable "Error Mode" to see successful loading behavior.
+    </p>
+    <div class="control-buttons">
+      <button type="button" (click)="reload()" class="btn-primary text-nowrap">
+        🔄 Reload
+      </button>
+      <app-control-buttons
+        [isSlowModeEnabled]="bookService.isSlowModeEnabled()"
+        [isErrorModeEnabled]="bookService.isErrorModeEnabled()"
+        (slowModeToggle)="bookService.toggleSlowMode()"
+        (errorModeToggle)="bookService.toggleErrorMode()" />
+    </div>
+  </section>
+
+  <!-- Side-by-side Comparison -->
+  <section class="comparison">
+    <!-- BUGGY: rxResource -->
+    <article class="demo-card buggy">
+      <header class="card-header">
+        <h3>
+          🔴 BUGGY: rxResource.reload()
+          @if (buggyResource.isLoading()) {
+            <span class="spinner-tiny"></span>
+            <span class="loading-text">Loading...</span>
+          }
+        </h3>
+        <p>Error state persists during reload</p>
+      </header>
+      <div class="card-body">
+        @if (buggyResource.hasValue()) {
+          @let book = buggyResource.value()!;
+          <app-book-card [book]="book" />
+        }
+
+        @if (buggyResource.error(); as error) {
+          <app-error-display [error]="error" />
+        }
+      </div>
+    </article>
+
+    <!-- FIXED: rxResourceFixed -->
+    <article class="demo-card fixed">
+      <header class="card-header">
+        <h3>
+          🟢 FIXED: rxResourceFixed.reload()
+          @if (fixedResource.isLoading()) {
+            <span class="spinner-tiny"></span>
+            <span class="loading-text">Loading...</span>
+          }
+        </h3>
+        <p>Error state clears immediately on reload</p>
+      </header>
+      <div class="card-body">
+        @if (fixedResource.error(); as error) {
+          <app-error-display [error]="error" />
+        } @else if (fixedResource.hasValue()) {
+          @let book = fixedResource.value()!;
+          <app-book-card [book]="book" />
+        }
+      </div>
+    </article>
+  </section>
+</div>

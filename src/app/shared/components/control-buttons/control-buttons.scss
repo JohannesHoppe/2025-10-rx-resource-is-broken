@@ -1,0 +1,6 @@
+// Button styles are defined in global styles.scss
+// This component uses the global .btn-primary, .btn-danger, .btn-success classes
+
+:host {
+  display: contents; // Allow buttons to participate in parent layout
+}

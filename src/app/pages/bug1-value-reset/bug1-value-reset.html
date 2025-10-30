@@ -1,0 +1,89 @@
+<div class="demo-container">
+  <header class="demo-header">
+    <a routerLink="/" class="back-link" aria-label="Back to home">← Back to Home</a>
+    <h1>Bug #1: Value Resets When Parameters Change</h1>
+    <p class="subtitle">
+      When you change parameters, the previous book list should remain visible while new data is being fetched.
+      Instead, the resource immediately sets <code>value()</code> to <code>undefined</code>.
+      All book cards disappear.
+      The DOM collapses.
+      The scroll position jumps.
+      Users are disoriented by the flickering.
+      At minimum, this behavior should be configurable.
+    </p>
+    <p class="github">
+      <strong>Affects:</strong> <code>resource()</code>, <code>rxResource()</code>, and <code>httpResource()</code> (all share the same foundation)<br>
+      <strong>Related Issue:</strong> <a href="https://github.com/angular/angular/issues/58602" target="_blank">#58602</a>
+    </p>
+  </header>
+
+  <!-- Controls -->
+  <section class="controls">
+    <p class="hint">
+      Press "Next Search Term" to change parameters and see the flickering.
+      If data comes too fast, try out slow mode!
+      Note: Errors are intentionally NOT handled on this page.
+      If you activate error mode, an uncaught exception will occur.
+      You can see it in your browser's dev tools.
+    </p>
+    <div class="control-buttons">
+      <button type="button" (click)="nextSearch()" class="btn-primary">
+        🔍 Next Search Term: "{{ searchTerm() }}"
+      </button>
+      <app-control-buttons
+        [isSlowModeEnabled]="bookService.isSlowModeEnabled()"
+        [isErrorModeEnabled]="bookService.isErrorModeEnabled()"
+        (slowModeToggle)="bookService.toggleSlowMode()"
+        (errorModeToggle)="bookService.toggleErrorMode()" />
+    </div>
+  </section>
+
+  <!-- Side-by-side Comparison -->
+  <section class="comparison">
+    <!-- BUGGY: rxResource -->
+    <article class="demo-card buggy">
+      <header class="card-header">
+        <h3>
+          🔴 BUGGY: rxResource
+          @if (buggyResource.isLoading()) {
+            <span class="spinner-tiny"></span>
+            <span class="loading-text">Loading...</span>
+          }
+        </h3>
+        <p>Standard rxResource clears value when parameters change. Watch the data disappear and reappear!</p>
+      </header>
+      <div class="card-body">
+        @if (buggyResource.value(); as books) {
+          <div class="books-grid">
+            @for (book of books; track book.isbn) {
+              <app-book-card [book]="book" />
+            }
+          </div>
+        }
+      </div>
+    </article>
+
+    <!-- FIXED: rxResourceFixed -->
+    <article class="demo-card fixed">
+      <header class="card-header">
+        <h3>
+          🟢 FIXED: rxResourceFixed
+          @if (fixedResource.isLoading()) {
+            <span class="spinner-tiny"></span>
+            <span class="loading-text">Loading...</span>
+          }
+        </h3>
+        <p>rxResourceFixed preserves previous data when parameters change. Data stays visible until new data arrives!</p>
+      </header>
+      <div class="card-body">
+        @if (fixedResource.value(); as books) {
+          <div class="books-grid">
+            @for (book of books; track book.isbn) {
+              <app-book-card [book]="book" />
+            }
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+</div>
